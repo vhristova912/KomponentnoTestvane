@@ -19,27 +19,27 @@ namespace BankingSystem
         {
             if(amount<=0)
             {
-                throw new InvalidOperationException("negative amount");
+                throw new InvalidOperationException("Negative amount");
             }
             this.Balance += amount;
         }
         public void Credit(decimal cash)
         {
-            if (this.Balance<=0)
+            if (cash <= 0 || cash > Balance)
             {
-                throw new ArgumentException("Invalid balance");
+                throw new InvalidOperationException("Negative balance");
             }
-            else
-            {
-                this.Balance = this.Balance - cash;
-            }
+            this.Balance = this.Balance - cash;
         }
         public void Increase(double percent)
         {
-            decimal percenT = Convert.ToDecimal(percent);
-            this.Balance = this.Balance + this.Balance * percenT / 100;
+            if (percent <= 0)
+            {
+                throw new InvalidOperationException("The percent must be positive!");
+            }
+            this.Balance = this.Balance + this.Balance * (decimal)percent / 100;
         }
-        public void Bonus()
+        public decimal Bonus()
         {
             if (Balance > 1000 && Balance < 2000)
             {
@@ -53,6 +53,19 @@ namespace BankingSystem
             {
                 this.Balance = this.Balance + 300;
             }
+            return this.Balance;
+        }
+        public decimal PaymentForCredit(decimal payment)
+        {
+            if (payment <= 0)
+            {
+                throw new InvalidOperationException("Payment cannot be zero or negative!");
+            }
+            if (this.Balance < payment)
+            {
+                throw new InvalidOperationException("Not enough money!");
+            }
+            return this.Balance -= payment;
         }
     }
 }

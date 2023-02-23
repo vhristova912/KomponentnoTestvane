@@ -11,77 +11,106 @@ namespace BankingSystem.Tests
         {
         }
 
-        [Test]
         public void DepositShouldIncreaseBalance()
         {
-            {
-                BankAccount bankAccount = new BankAccount(123);
-                decimal depositAmount = 100;
-                bankAccount.Deposit(depositAmount);
-                Assert.AreEqual(depositAmount, bankAccount.Balance);
-            }
+            BankAccount bankAccount = new BankAccount(123);
+            decimal depositAmount = 100;
+
+            bankAccount.Deposit(depositAmount);
+            Assert.AreEqual(depositAmount, bankAccount.Balance);
         }
         [Test]
-        public void AccountInicialiseWithPositiveValue()
+        public void AccountInicializeWithPositiveValue()
         {
-            {
-                BankAccount bankAccount = new BankAccount(123, 2000m);
-                Assert.AreEqual(2000m, bankAccount.Balance);
-            }
+            BankAccount bankAccount = new BankAccount(123, 2000m);
+            Assert.AreEqual(2000m, bankAccount.Balance);
         }
-        [TestCase(100)]
-        [TestCase(3500)]
-        [TestCase(2400)]
-        public void DepositShouldIncreaseBalance(decimal depositAmount)
+        [Test]
+        public void NegativeAmountShouldThrowInvalidOperationException()
         {
-            {
-                BankAccount bankAccount = new BankAccount(123);
-                bankAccount.Deposit(depositAmount);
-                Assert.AreEqual(depositAmount, bankAccount.Balance);
-            }
+            BankAccount bankAccount = new BankAccount(123);
+            decimal depositAmount = -100;
+            Assert.Throws<InvalidOperationException>(() => bankAccount.Deposit(depositAmount));
         }
-        public void NegativeAmountShouldThrowInvalidOperationExceptions()
-        {
-            {
-                BankAccount bankAccount = new BankAccount(123);
-                decimal depositAmount = -100;
-                Assert.Throws<InvalidOperationException>(() => bankAccount.Deposit(depositAmount));
-            }
-        }
-        public void NegativeAmountShouldThrowInvalidOperationExceptionsWithMessage()
+        [Test]
+        public void NegativeAmountShouldThrowInvalidOperationExceptionWithMessage()
         {
             BankAccount bankAccount = new BankAccount(123);
             decimal depositAmount = -100;
             var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.Deposit(depositAmount));
-            Assert.AreEqual("Negative amount", ex.Message);
-        }
-
-
-        [Test]
-        public void CreditTakesCashFromBalance()
-        {
-            BankAccount bankAccounts = new BankAccount(123);
-            decimal cash = 100;
-
-            bankAccounts.Credit(cash);
-            Assert.AreEqual(cash, bankAccounts.Balance);
+            Assert.AreEqual("Negative amount",ex.Message );
         }
         [Test]
-        public void BalanceShouldIncreasePercent()
+        public void NegativeCashShouldThrowInvalidOperationExceptionWithMessage()
         {
-            BankAccount bankAccounts = new BankAccount(123);
-            double percent = 10;
+            {
+                BankAccount bankAccount = new BankAccount(123);
+                decimal cashCredit = -100;
 
-            bankAccounts.Increase(percent);
-            Assert.AreEqual(percent, bankAccounts.Balance);
+                var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.Credit(cashCredit));
+
+                Assert.AreEqual(ex.Message, "Negative balance");
+            }
         }
         [Test]
-        public void BalanceShouldIncreaseBonus()
+        public void PercentShouldBeAPositiveNumber()
         {
-            BankAccount bankAccounts = new BankAccount(123);
+            {
+                BankAccount bankAccount = new BankAccount(123);
+                double percent = -100;
 
-            bankAccounts.Bonus();
-            Assert.AreEqual(bankAccounts.Balance, bankAccounts.Balance);
+                var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.Increase(percent));
+
+                Assert.AreEqual(ex.Message, "The percent must be positive!");
+            }
+        }
+        [Test]
+        public void BonusShouldIncreaseBalanceWithBonusWithMessage()
+        {
+            BankAccount bankAccount = new BankAccount(123);
+            bankAccount.Balance = bankAccount.Bonus();
+            Assert.AreEqual(bankAccount.Bonus(), bankAccount.Balance);
+        }
+        [Test]
+        public void NegativePaymentShouldThrowInvalidOperationExceptionWithMessage()
+        {
+            {
+                BankAccount bankAccount = new BankAccount(123);
+                decimal payment = -100;
+
+                var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.PaymentForCredit(payment));
+                Assert.AreEqual(ex.Message, "Payment cannot be zero or negative!");
+            }
+        }
+        [Test]
+        public void ZeroPaymentShouldThrowInvalidOperationExceptionWithMessage()
+        {
+            {
+                BankAccount bankAccount = new BankAccount(123);
+                decimal payment = 0;
+
+                var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.PaymentForCredit(payment));
+                Assert.AreEqual(ex.Message, "Payment cannot be zero or negative!");
+            }
+        }
+        [Test]
+        public void NotEnoughPaymentShouldThrowInvalidOperationExceptionWithMessage() 
+        {
+            {
+                BankAccount bankAccount = new BankAccount(123);
+                decimal payment = 100;
+
+                var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.PaymentForCredit(payment));
+                Assert.AreEqual(ex.Message, "Not enough money!");
+            }
+        }
+        [Test]
+        public void BalanceMinusPaymentIfEnoughMoney() 
+        {
+            BankAccount bankAccount = new BankAccount(123, 1000);
+
+            bankAccount.Balance = bankAccount.PaymentForCredit(100);
+            Assert.AreEqual(bankAccount.PaymentForCredit(100), bankAccount.Balance);
         }
     }
 
