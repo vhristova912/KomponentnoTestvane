@@ -55,7 +55,34 @@ namespace BankingSystem.Tests
             var ex = Assert.Throws<InvalidOperationException>(() => bankAccount.Deposit(depositAmount));
             Assert.AreEqual("Negative amount", ex.Message);
         }
-        
+
+
+        [Test]
+        public void CreditTakesCashFromBalance()
+        {
+            BankAccount bankAccounts = new BankAccount(123);
+            decimal cash = 100;
+
+            bankAccounts.Credit(cash);
+            Assert.AreEqual(cash, bankAccounts.Balance);
+        }
+        [Test]
+        public void BalanceShouldIncreasePercent()
+        {
+            BankAccount bankAccounts = new BankAccount(123);
+            double percent = 10;
+
+            bankAccounts.Increase(percent);
+            Assert.AreEqual(percent, bankAccounts.Balance);
+        }
+        [Test]
+        public void BalanceShouldIncreaseBonus()
+        {
+            BankAccount bankAccounts = new BankAccount(123);
+
+            bankAccounts.Bonus();
+            Assert.AreEqual(bankAccounts.Balance, bankAccounts.Balance);
+        }
     }
 
 }

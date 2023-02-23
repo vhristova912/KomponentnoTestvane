@@ -36,7 +36,23 @@ namespace BankingSystem
         }
         public void Increase(double percent)
         {
-           
+            decimal percenT = Convert.ToDecimal(percent);
+            this.Balance = this.Balance + this.Balance * percenT / 100;
+        }
+        public void Bonus()
+        {
+            if (Balance > 1000 && Balance < 2000)
+            {
+                this.Balance = this.Balance + 100;
+            }
+            else if (Balance > 2000 && Balance < 3000)
+            {
+                this.Balance = this.Balance + 200;
+            }
+            else if (Balance > 3000)
+            {
+                this.Balance = this.Balance + 300;
+            }
         }
     }
 }
